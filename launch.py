@@ -23,8 +23,13 @@ def prepare_environment():
 
     xformers_package = os.environ.get('XFORMERS_PACKAGE', 'xformers==0.0.21')
 
+    if comfy.cli_args.args.colab_friendly:
+        comfy_commit = "2bc12d3d22efb5c63ae3a7fc342bb2dd16b31735"
+    else:
+        comfy_commit = "2381d36e6db8e8150e42ff2ede628db5b00ae26f"
+
     comfy_repo = os.environ.get('COMFY_REPO', "https://github.com/comfyanonymous/ComfyUI")
-    comfy_commit_hash = os.environ.get('COMFY_COMMIT_HASH', "2381d36e6db8e8150e42ff2ede628db5b00ae26f")
+    comfy_commit_hash = os.environ.get('COMFY_COMMIT_HASH', comfy_commit)    
 
     print(f"Python {sys.version}")
     print(f"Fooocus version: {fooocus_version.version}")
@@ -128,6 +133,7 @@ def parse_args():
     parser.add_argument("--port", type=int, default=None, help="Set the listen port.")
     parser.add_argument("--share", action='store_true', help="Set whether to share on Gradio.")
     parser.add_argument("--listen", type=str, default=None, metavar="IP", nargs="?", const="0.0.0.0", help="Set the listen interface.")
+    parser.add_argument("--colab_friendly", action='store_true', help="Will use an older version of Comfy which works on Google Colab.")
 
     comfy.cli_args.args = parser.parse_args()
 
@@ -135,10 +141,9 @@ def parse_args():
 def cuda_malloc():
     import cuda_malloc
 
+parse_args()
 
 prepare_environment()
-
-parse_args()
 
 download_models()
 
